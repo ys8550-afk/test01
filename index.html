@@ -161,6 +161,52 @@
     .contact .cta { justify-content: center; margin-top: 0; }
     footer { padding: 32px 0 48px; text-align: center; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); }
 
+    /* Auth */
+    .auth-area { display: flex; align-items: center; gap: 10px; }
+    .auth-user { font-size: .85rem; color: var(--muted); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .btn-sm { padding: 8px 16px; border-radius: 10px; font-size: .88rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn-sm.solid { background: var(--accent); color: #fff; border: 1.5px solid var(--accent); }
+    .btn-sm.line { background: var(--surface); color: var(--text); border: 1.5px solid var(--line); }
+    .hidden { display: none !important; }
+    @media (max-width: 640px) { .auth-user { display: none; } .nav { gap: 8px; } }
+
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 100; background: rgba(10, 16, 30, .55);
+      display: grid; place-items: center; padding: 20px;
+    }
+    .modal {
+      width: 100%; max-width: 380px; background: var(--surface); border: 1px solid var(--line);
+      border-radius: 22px; padding: 28px 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, .3); position: relative;
+    }
+    .modal h2 { font-size: 1.3rem; font-weight: 900; margin-bottom: 4px; }
+    .modal .desc { color: var(--muted); font-size: .9rem; margin-bottom: 18px; }
+    .modal .close {
+      position: absolute; top: 14px; right: 16px; background: none; border: 0; cursor: pointer;
+      font-size: 1.5rem; line-height: 1; color: var(--muted);
+    }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 18px; }
+    .tabs button {
+      border: 0; background: none; padding: 9px; border-radius: 9px; font-family: inherit;
+      font-weight: 700; font-size: .92rem; color: var(--muted); cursor: pointer;
+    }
+    .tabs button.on { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(0, 0, 0, .12); }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: .82rem; font-weight: 700; margin-bottom: 4px; }
+    .field input {
+      width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line);
+      background: var(--bg); color: var(--text); font-size: .95rem; font-family: inherit;
+    }
+    .field input:focus { outline: none; border-color: var(--accent); }
+    .msg { font-size: .87rem; margin: 4px 0 12px; min-height: 1.3em; }
+    .msg.err { color: #dc2626; }
+    .msg.ok { color: #16a34a; }
+    .submit { width: 100%; justify-content: center; border: 0; cursor: pointer; font-family: inherit; }
+    .submit:disabled { opacity: .6; cursor: wait; }
+
+    @media (prefers-color-scheme: dark) {
+      .btn-primary, .btn-sm.solid, .flow li::before { color: #0b1220; }
+    }
+
     /* Reveal animation */
     .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
     .reveal.in { opacity: 1; transform: none; }
@@ -184,8 +230,38 @@
           <li><a href="#vibe">도전</a></li>
         </ul>
       </nav>
+      <div class="auth-area">
+        <span id="authUser" class="auth-user hidden"></span>
+        <button id="loginBtn" class="btn-sm solid" type="button">로그인</button>
+        <button id="logoutBtn" class="btn-sm line hidden" type="button">로그아웃</button>
+      </div>
     </div>
   </header>
+
+  <!-- Login modal -->
+  <div id="authModal" class="modal-bg hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="modal">
+      <button class="close" id="authClose" type="button" aria-label="닫기">&times;</button>
+      <h2 id="authTitle">로그인</h2>
+      <p class="desc" id="authDesc">이메일과 비밀번호로 로그인하세요.</p>
+      <div class="tabs">
+        <button type="button" id="tabLogin" class="on">로그인</button>
+        <button type="button" id="tabSignup">회원가입</button>
+      </div>
+      <form id="authForm" novalidate>
+        <div class="field">
+          <label for="authEmail">이메일</label>
+          <input id="authEmail" type="email" autocomplete="email" placeholder="example@email.com" required>
+        </div>
+        <div class="field">
+          <label for="authPw">비밀번호</label>
+          <input id="authPw" type="password" autocomplete="current-password" placeholder="6자 이상" minlength="6" required>
+        </div>
+        <p id="authMsg" class="msg" role="status"></p>
+        <button id="authSubmit" class="btn btn-primary submit" type="submit">로그인</button>
+      </form>
+    </div>
+  </div>
 
   <main id="top">
     <!-- Hero -->
@@ -332,8 +408,94 @@
     <div class="wrap">© 2026 황영섭. All rights reserved. · Made with Vibe Coding</div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const io = new IntersectionObserver((entries) => {
+    // Supabase (브라우저에는 공개용 anon 키만 사용합니다. service_role 키는 절대 넣지 마세요)
+    const SUPABASE_URL = 'https://xapqlasvbhumbymusdtz.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcHFsYXN2Ymh1bWJ5bXVzZHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NTk1ODEsImV4cCI6MjEwNTUzNTU4MX0.tiAuI45aYqBWV5waowZpp1nZg3ruUxcyswJAH13QNO0';
+    const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    const $ = (id) => document.getElementById(id);
+    const modal = $('authModal'), form = $('authForm'), msg = $('authMsg'), submit = $('authSubmit');
+    let mode = 'login';
+
+    function setMode(m) {
+      mode = m;
+      const isLogin = m === 'login';
+      $('tabLogin').classList.toggle('on', isLogin);
+      $('tabSignup').classList.toggle('on', !isLogin);
+      $('authTitle').textContent = isLogin ? '로그인' : '회원가입';
+      $('authDesc').textContent = isLogin ? '이메일과 비밀번호로 로그인하세요.' : '이메일과 비밀번호로 가입하세요.';
+      submit.textContent = isLogin ? '로그인' : '회원가입';
+      $('authPw').autocomplete = isLogin ? 'current-password' : 'new-password';
+      showMsg('');
+    }
+    function showMsg(text, type) { msg.textContent = text; msg.className = 'msg' + (type ? ' ' + type : ''); }
+    function openModal(m) { setMode(m || 'login'); modal.classList.remove('hidden'); $('authEmail').focus(); }
+    function closeModal() { modal.classList.add('hidden'); form.reset(); showMsg(''); }
+
+    function errText(e) {
+      const m = (e && e.message || '').toLowerCase();
+      if (m.includes('invalid login')) return '이메일 또는 비밀번호가 올바르지 않습니다.';
+      if (m.includes('email not confirmed')) return '이메일 인증이 필요합니다. 받은 메일함을 확인해 주세요.';
+      if (m.includes('already registered')) return '이미 가입된 이메일입니다. 로그인해 주세요.';
+      if (m.includes('password should be')) return '비밀번호는 6자 이상이어야 합니다.';
+      if (m.includes('rate limit')) return '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.';
+      if (m.includes('invalid') && m.includes('email')) return '올바른 이메일 형식이 아닙니다.';
+      return '오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+    }
+
+    function renderAuth(session) {
+      const user = session && session.user;
+      $('loginBtn').classList.toggle('hidden', !!user);
+      $('logoutBtn').classList.toggle('hidden', !user);
+      $('authUser').classList.toggle('hidden', !user);
+      $('authUser').textContent = user ? user.email : '';
+    }
+
+    $('loginBtn').addEventListener('click', () => openModal('login'));
+    $('authClose').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+    $('tabLogin').addEventListener('click', () => setMode('login'));
+    $('tabSignup').addEventListener('click', () => setMode('signup'));
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!sb) return showMsg('인증 서비스를 불러오지 못했습니다. 새로고침해 주세요.', 'err');
+      const email = $('authEmail').value.trim(), password = $('authPw').value;
+      if (!email || !password) return showMsg('이메일과 비밀번호를 입력해 주세요.', 'err');
+      if (password.length < 6) return showMsg('비밀번호는 6자 이상이어야 합니다.', 'err');
+      submit.disabled = true; showMsg('');
+      try {
+        if (mode === 'login') {
+          const { error } = await sb.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          closeModal();
+        } else {
+          const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } });
+          if (error) throw error;
+          if (data.user && data.user.identities && data.user.identities.length === 0) throw new Error('already registered');
+          if (data.session) closeModal();
+          else showMsg('가입 완료! 이메일로 발송된 인증 링크를 누른 뒤 로그인해 주세요.', 'ok');
+        }
+      } catch (err) {
+        showMsg(errText(err), 'err');
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    $('logoutBtn').addEventListener('click', async () => { if (sb) await sb.auth.signOut(); });
+
+    if (sb) {
+      sb.auth.getSession().then(({ data }) => renderAuth(data.session));
+      sb.auth.onAuthStateChange((_event, session) => renderAuth(session));
+    } else {
+      $('loginBtn').classList.add('hidden');
+    }
+
+    const io =new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
     }, { threshold: .12 });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
