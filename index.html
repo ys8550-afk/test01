@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>황영섭 | 개인 프로필</title>
+  <meta name="description" content="황영섭의 개인 프로필 - 농구와 낚시를 사랑하고, 바이브코딩으로 유튜브 자동 게시에 도전합니다.">
+  <meta property="og:title" content="황영섭 | 개인 프로필">
+  <meta property="og:description" content="농구 · 낚시 · 바이브코딩으로 만드는 유튜브 자동 게시">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --text: #1a2233;
+      --muted: #5b6577;
+      --line: #e3e8ef;
+      --accent: #2563eb;
+      --accent-soft: #e8efff;
+      --orange: #f97316;
+      --radius: 18px;
+      --shadow: 0 6px 24px rgba(20, 40, 90, .07);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e131d;
+        --surface: #161d2b;
+        --text: #eef2f8;
+        --muted: #9aa5b8;
+        --line: #26304a;
+        --accent: #6d9bff;
+        --accent-soft: #1b2a4d;
+        --shadow: 0 6px 24px rgba(0, 0, 0, .35);
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+    body {
+      font-family: 'Noto Sans KR', system-ui, -apple-system, 'Malgun Gothic', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
+    /* Header */
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .logo { font-weight: 900; font-size: 1.1rem; letter-spacing: -.02em; }
+    .logo span { color: var(--accent); }
+    nav ul { display: flex; gap: 22px; list-style: none; }
+    nav a { font-size: .92rem; color: var(--muted); font-weight: 500; transition: color .2s; }
+    nav a:hover { color: var(--accent); }
+    @media (max-width: 640px) { nav ul { gap: 14px; } nav a { font-size: .82rem; } }
+
+    /* Hero */
+    .hero { padding: 80px 0 64px; }
+    .hero-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: center; }
+    .badge {
+      display: inline-block; padding: 6px 14px; border-radius: 999px;
+      background: var(--accent-soft); color: var(--accent);
+      font-size: .85rem; font-weight: 700; margin-bottom: 20px;
+    }
+    h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); line-height: 1.2; font-weight: 900; letter-spacing: -.03em; }
+    h1 em { font-style: normal; color: var(--accent); }
+    .hero p.lead { margin-top: 20px; color: var(--muted); font-size: 1.08rem; max-width: 520px; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 13px 24px; border-radius: 12px; font-weight: 700; font-size: .95rem;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 6px 18px rgba(37, 99, 235, .3); }
+    .btn-ghost { border: 1.5px solid var(--line); background: var(--surface); }
+
+    .profile-card {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 28px; padding: 36px 28px; text-align: center; box-shadow: var(--shadow);
+    }
+    .avatar {
+      width: 140px; height: 140px; margin: 0 auto 20px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 4.2rem;
+      background: linear-gradient(135deg, var(--accent-soft), #ffe9d6);
+      border: 4px solid var(--surface); box-shadow: 0 0 0 2px var(--line);
+    }
+    .profile-card h2 { font-size: 1.5rem; font-weight: 900; }
+    .profile-card .sub { color: var(--muted); font-size: .92rem; margin-top: 2px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 24px; }
+    .stat { background: var(--bg); border-radius: 12px; padding: 12px 4px; }
+    .stat b { display: block; font-size: 1.3rem; }
+    .stat small { color: var(--muted); font-size: .78rem; }
+
+    @media (max-width: 800px) {
+      .hero { padding: 48px 0 40px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+    }
+
+    /* Sections */
+    section.block { padding: 72px 0; border-top: 1px solid var(--line); }
+    .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; }
+    .sec-num { font-weight: 900; font-size: 1rem; color: var(--accent); letter-spacing: .05em; }
+    .sec-head h2 { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 900; letter-spacing: -.02em; }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 28px 24px; box-shadow: var(--shadow);
+      transition: transform .2s;
+    }
+    .card:hover { transform: translateY(-4px); }
+    .card .ico {
+      width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center;
+      background: var(--accent-soft); font-size: 1.6rem; margin-bottom: 16px;
+    }
+    .card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .card p { color: var(--muted); font-size: .95rem; }
+    .card .label { font-size: .8rem; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+
+    .quote {
+      margin-top: 28px; padding: 22px 26px; border-left: 4px solid var(--accent);
+      background: var(--surface); border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 1.05rem; font-weight: 500;
+    }
+
+    /* Feature (highlight) */
+    .feature {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 36px;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 24px; padding: 40px; box-shadow: var(--shadow);
+    }
+    .feature h3 { font-size: 1.5rem; font-weight: 900; line-height: 1.35; letter-spacing: -.02em; }
+    .feature h3 em { font-style: normal; color: var(--orange); }
+    .feature > div > p { color: var(--muted); margin-top: 14px; }
+    .flow { list-style: none; counter-reset: step; display: grid; gap: 12px; }
+    .flow li {
+      counter-increment: step; display: flex; gap: 14px; align-items: center;
+      background: var(--bg); border-radius: 14px; padding: 14px 16px; font-weight: 500;
+    }
+    .flow li::before {
+      content: counter(step); flex: none; width: 30px; height: 30px; border-radius: 50%;
+      background: var(--accent); color: #fff; display: grid; place-items: center;
+      font-size: .85rem; font-weight: 700;
+    }
+    @media (max-width: 800px) { .feature { grid-template-columns: 1fr; padding: 28px 22px; } }
+
+    /* Contact / Footer */
+    .contact { text-align: center; }
+    .contact p { color: var(--muted); margin: 6px 0 26px; }
+    .contact .cta { justify-content: center; margin-top: 0; }
+    footer { padding: 32px 0 48px; text-align: center; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); }
+
+    /* Reveal animation */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .card, .btn { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap nav">
+      <a href="#top" class="logo">황영섭<span>.</span></a>
+      <nav>
+        <ul>
+          <li><a href="#about">소개</a></li>
+          <li><a href="#skill">특기</a></li>
+          <li><a href="#hobby">취미</a></li>
+          <li><a href="#vibe">도전</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <div class="wrap hero">
+      <div class="hero-grid">
+        <div class="reveal">
+          <span class="badge">🏀 농구 · 🎣 낚시 · 💻 바이브코딩</span>
+          <h1>안녕하세요,<br><em>황영섭</em>입니다.</h1>
+          <p class="lead">코트에서 땀 흘리고, 물가에서 여유를 즐기며,<br>이제는 바이브코딩으로 새로운 세계에 도전합니다.</p>
+          <div class="cta">
+            <a href="#vibe" class="btn btn-primary">제 도전 보기 →</a>
+            <a href="#about" class="btn btn-ghost">프로필 보기</a>
+          </div>
+        </div>
+
+        <aside class="profile-card reveal">
+          <div class="avatar" aria-hidden="true">🏀</div>
+          <h2>황영섭</h2>
+          <p class="sub">Vibe Coding Beginner</p>
+          <div class="stats">
+            <div class="stat"><b>60</b><small>나이</small></div>
+            <div class="stat"><b>🏀</b><small>특기</small></div>
+            <div class="stat"><b>🎣</b><small>취미</small></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- 01 About -->
+    <section class="block" id="about">
+      <div class="wrap">
+        <div class="sec-head reveal"><span class="sec-num">01</span><h2>기본 프로필</h2></div>
+        <div class="cards">
+          <article class="card reveal">
+            <div class="ico">🙋</div>
+            <div class="label">NAME</div>
+            <h3>황영섭</h3>
+            <p>새로운 것을 배우는 데 나이는 숫자일 뿐이라고 믿습니다.</p>
+          </article>
+          <article class="card reveal">
+            <div class="ico">🎂</div>
+            <div class="label">AGE</div>
+            <h3>60세</h3>
+            <p>오랜 경험 위에 새로운 기술을 더하는 중입니다.</p>
+          </article>
+          <article class="card reveal">
+            <div class="ico">🏀</div>
+            <div class="label">SPECIALTY</div>
+            <h3>농구</h3>
+            <p>코트 위에서 가장 빛나는 저의 특기입니다.</p>
+          </article>
+          <article class="card reveal">
+            <div class="ico">🎣</div>
+            <div class="label">HOBBY</div>
+            <h3>낚시</h3>
+            <p>기다림의 미학을 즐기는 휴식 시간입니다.</p>
+          </article>
+        </div>
+        <p class="quote reveal">“나이 60, 이제 코딩도 농구처럼 — 꾸준히 연습하면 늘어납니다.”</p>
+      </div>
+    </section>
+
+    <!-- 02 Skill -->
+    <section class="block" id="skill">
+      <div class="wrap">
+        <div class="sec-head reveal"><span class="sec-num">02</span><h2>특기 · 농구</h2></div>
+        <div class="cards">
+          <article class="card reveal">
+            <div class="ico">⛹️</div>
+            <h3>팀 플레이</h3>
+            <p>혼자보다 함께할 때 더 멀리 갑니다. 농구에서 배운 협동의 가치를 중요하게 생각합니다.</p>
+          </article>
+          <article class="card reveal">
+            <div class="ico">💪</div>
+            <h3>꾸준한 체력</h3>
+            <p>농구로 다져진 체력과 끈기는 새로운 도전에도 큰 힘이 됩니다.</p>
+          </article>
+          <article class="card reveal">
+            <div class="ico">🎯</div>
+            <h3>집중력</h3>
+            <p>결정적인 순간 슛을 던지는 집중력, 그 감각을 일상에도 적용합니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Hobby -->
+    <section class="block" id="hobby">
+      <div class="wrap">
+        <div class="sec-head reveal"><span class="sec-num">03</span><h2>취미 · 낚시</h2></div>
+        <div class="cards">
+          <article class="card reveal">
+            <div class="ico">🌊</div>
+            <h3>여유와 힐링</h3>
+            <p>물가에서 바쁜 일상을 잠시 내려놓고 마음을 다스립니다.</p>
+          </article>
+          <article class="card reveal">
+            <div class="ico">⏳</div>
+            <h3>기다림의 미학</h3>
+            <p>입질이 올 때까지 기다리는 인내심, 무엇이든 서두르지 않는 법을 배웁니다.</p>
+          </article>
+          <article class="card reveal">
+            <div class="ico">🐟</div>
+            <h3>손맛의 순간</h3>
+            <p>기다림 끝에 오는 짜릿한 한 번의 손맛이 낚시의 가장 큰 매력입니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Vibe coding -->
+    <section class="block" id="vibe">
+      <div class="wrap">
+        <div class="sec-head reveal"><span class="sec-num">04</span><h2>바이브코딩으로 만들고 싶은 것</h2></div>
+        <div class="feature reveal">
+          <div>
+            <div class="badge" style="background:#fff1e6;color:var(--orange)">▶ MY GOAL</div>
+            <h3>유튜브 <em>자동 게시</em> 시스템</h3>
+            <p>영상을 만들고, 제목·설명을 정리하고, 업로드까지 — 반복되는 유튜브 게시 과정을 AI와 함께 코딩해서 자동화하는 것이 저의 목표입니다.</p>
+          </div>
+          <ol class="flow">
+            <li>콘텐츠 아이디어 정리 (농구 · 낚시 이야기)</li>
+            <li>영상 · 제목 · 설명 · 썸네일 준비</li>
+            <li>YouTube 업로드 자동화</li>
+            <li>정해진 시간에 자동 게시</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="block contact" id="contact">
+      <div class="wrap reveal">
+        <h2 style="font-size:clamp(1.5rem,4vw,2rem);font-weight:900">함께 이야기해요</h2>
+        <p>농구, 낚시, 바이브코딩 — 어떤 주제든 환영합니다.</p>
+        <div class="cta">
+          <a href="#top" class="btn btn-primary">맨 위로 ↑</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">© 2026 황영섭. All rights reserved. · Made with Vibe Coding</div>
+  </footer>
+
+  <script>
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
