@@ -167,6 +167,10 @@
     .btn-sm { padding: 8px 16px; border-radius: 10px; font-size: .88rem; font-weight: 700; cursor: pointer; font-family: inherit; }
     .btn-sm.solid { background: var(--accent); color: #fff; border: 1.5px solid var(--accent); }
     .btn-sm.line { background: var(--surface); color: var(--text); border: 1.5px solid var(--line); }
+    .admin-badge {
+      padding: 3px 10px; border-radius: 999px; font-size: .75rem; font-weight: 700;
+      background: #fff1e6; color: var(--orange); white-space: nowrap;
+    }
     .hidden { display: none !important; }
     @media (max-width: 640px) { .auth-user { display: none; } .nav { gap: 8px; } }
 
@@ -290,6 +294,7 @@
         </ul>
       </nav>
       <div class="auth-area">
+        <span id="adminBadge" class="admin-badge hidden">관리자</span>
         <span id="authUser" class="auth-user hidden"></span>
         <button id="loginBtn" class="btn-sm solid" type="button">로그인</button>
         <button id="logoutBtn" class="btn-sm line hidden" type="button">로그아웃</button>
@@ -547,12 +552,27 @@
       boardUser = user || null;
       $('postForm').classList.toggle('hidden', !user);
       $('postLogin').classList.toggle('hidden', !!user || !sb);
-      if ((boardUser ? boardUser.id : null) !== prevId) { editingId = null; renderPosts(boardErr); }
+      if ((boardUser ? boardUser.id : null) !== prevId) {
+        editingId = null; boardAdmin = false;
+        $('adminBadge').classList.add('hidden');
+        renderPosts(boardErr);
+        checkAdmin(boardUser);
+      }
+    }
+
+    // 관리자 여부는 화면 표시용입니다. 실제 삭제 권한은 DB 규칙(RLS)이 판단합니다.
+    async function checkAdmin(user) {
+      if (!user || !sb) return;
+      const { data } = await sb.from('admins').select('user_id').eq('user_id', user.id).maybeSingle();
+      if (!data || !boardUser || boardUser.id !== user.id) return;
+      boardAdmin = true;
+      $('adminBadge').classList.remove('hidden');
+      renderPosts(boardErr);
     }
 
     // ---- 게시판 ----
     const PAGE_SIZE = 10;
-    let boardUser = null, posts = [], hasMore = false, editingId = null, boardErr = '';
+    let boardUser = null, boardAdmin = false, posts = [], hasMore = false, editingId = null, boardErr = '';
     const openPosts = new Set();        // 댓글 창이 열린 글 id
     const commentsByPost = new Map();   // 글 id -> { items } | { error }
 
@@ -604,12 +624,10 @@
       } else {
         const head = el('div', 'post-head');
         head.appendChild(el('h3', '', post.title));
-        if (mine) {
+        if (mine || boardAdmin) {
           const acts = el('div', 'post-actions');
-          acts.append(
-            btn('수정', 'line', () => { const prev = editingId; editingId = post.id; if (prev) refreshPost(prev); refreshPost(post.id); }),
-            btn('삭제', 'line', (e) => deletePost(post, e.currentTarget))
-          );
+          if (mine) acts.appendChild(btn('수정', 'line', () => { const prev = editingId; editingId = post.id; if (prev) refreshPost(prev); refreshPost(post.id); }));
+          acts.appendChild(btn('삭제', 'line', (e) => deletePost(post, e.currentTarget)));
           head.appendChild(acts);
         }
         item.append(
@@ -667,7 +685,7 @@
           const row = el('div', 'comment');
           const head = el('div', 'cmt-head');
           head.append(el('strong', '', c.author), el('span', '', fmtDate(c.created_at)));
-          if (boardUser && boardUser.id === c.user_id) {
+          if (boardUser && (boardAdmin || boardUser.id === c.user_id)) {
             const del = el('button', 'del-cmt', '삭제'); del.type = 'button';
             del.addEventListener('click', () => deleteComment(post, c, del));
             head.appendChild(del);

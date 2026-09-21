@@ -97,3 +97,54 @@ create policy "users delete own comments"
   on public.comments for delete
   to authenticated
   using (auth.uid() = user_id);
+
+-- ============ 관리자 ============
+-- 관리자 목록. 화면/API에서는 본인 행만 조회할 수 있고, 추가·삭제는 SQL Editor 에서만 가능합니다.
+create table if not exists public.admins (
+  user_id uuid primary key references auth.users(id) on delete cascade
+);
+
+alter table public.admins enable row level security;
+
+drop policy if exists "admins read self" on public.admins;
+create policy "admins read self"
+  on public.admins for select
+  to authenticated
+  using (auth.uid() = user_id);
+
+-- 현재 로그인한 사용자가 관리자인지 (RLS 정책에서 사용)
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (select 1 from public.admins where user_id = auth.uid());
+$$;
+
+-- 관리자는 남의 글/댓글도 삭제할 수 있습니다 (수정은 본인 글만 가능)
+drop policy if exists "users delete own posts" on public.posts;
+create policy "users delete own posts"
+  on public.posts for delete
+  to authenticated
+  using (auth.uid() = user_id or public.is_admin());
+
+drop policy if exists "users delete own comments" on public.comments;
+create policy "users delete own comments"
+  on public.comments for delete
+  to authenticated
+  using (auth.uid() = user_id or public.is_admin());
+
+-- ---------------------------------------------------------------
+-- 관리자 지정하는 법 (이메일은 본인 것으로 바꿔서 SQL Editor 에서 따로 실행하세요.
+-- 이 파일에는 이메일을 적지 마세요 - 저장소에 공개됩니다.)
+--
+--   insert into public.admins (user_id)
+--   select id from auth.users where email = '관리자로_쓸_이메일@example.com'
+--   on conflict do nothing;
+--
+-- 관리자 해제:
+--   delete from public.admins
+--   where user_id = (select id from auth.users where email = '관리자로_쓸_이메일@example.com');
+-- ---------------------------------------------------------------
