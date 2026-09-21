@@ -207,6 +207,64 @@
       .btn-primary, .btn-sm.solid, .flow li::before { color: #0b1220; }
     }
 
+    /* Board */
+    .board-form {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 22px 24px; box-shadow: var(--shadow); margin-bottom: 22px;
+    }
+    .board-form .field input, .board-form .field textarea {
+      width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line);
+      background: var(--bg); color: var(--text); font-size: .95rem; font-family: inherit;
+    }
+    .board-form .field textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+    .board-form .field input:focus, .board-form .field textarea:focus { outline: none; border-color: var(--accent); }
+    .board-form .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .board-form .row .msg { margin: 0; flex: 1; }
+    .board-login {
+      background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius);
+      padding: 22px 24px; margin-bottom: 22px; color: var(--muted);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .posts { display: grid; gap: 14px; }
+    .post {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 20px 24px; box-shadow: var(--shadow);
+    }
+    .post-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .post h3 { font-size: 1.08rem; font-weight: 700; word-break: break-word; }
+    .post .meta { color: var(--muted); font-size: .82rem; margin: 2px 0 10px; }
+    .post .body { white-space: pre-wrap; word-break: break-word; font-size: .95rem; }
+    .post .del { flex: none; }
+    .board-empty { text-align: center; color: var(--muted); padding: 36px 0; }
+    .board-more { display: flex; justify-content: center; margin-top: 20px; }
+    .post-actions { display: flex; gap: 6px; flex: none; }
+    .btn-sm:disabled { opacity: .6; cursor: wait; }
+    .inp {
+      width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line);
+      background: var(--bg); color: var(--text); font-size: .95rem; font-family: inherit;
+    }
+    .inp:focus { outline: none; border-color: var(--accent); }
+    textarea.inp { resize: vertical; min-height: 110px; line-height: 1.6; }
+    .post-edit { display: grid; gap: 10px; }
+    .post-edit .row { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+    .post-edit .row .msg { margin: 0; flex: 1; }
+    .comments-wrap { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .cmt-toggle { padding: 6px 12px; font-size: .82rem; }
+    .comments { margin-top: 12px; display: grid; gap: 10px; }
+    .comment { background: var(--bg); border-radius: 12px; padding: 10px 14px; }
+    .cmt-head { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: var(--muted); }
+    .cmt-head strong { color: var(--text); font-weight: 700; }
+    .cmt-head .del-cmt {
+      margin-left: auto; background: none; border: 0; cursor: pointer; font-family: inherit;
+      font-size: .8rem; color: var(--muted);
+    }
+    .cmt-head .del-cmt:hover { color: #dc2626; }
+    .cmt-body { white-space: pre-wrap; word-break: break-word; font-size: .92rem; margin-top: 2px; }
+    .cmt-empty, .cmt-hint { color: var(--muted); font-size: .88rem; }
+    .comment-form { display: flex; gap: 8px; }
+    .comment-form .inp { flex: 1; min-width: 0; }
+    .comment-form .msg { margin: 0; }
+
     /* Reveal animation */
     .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
     .reveal.in { opacity: 1; transform: none; }
@@ -228,6 +286,7 @@
           <li><a href="#skill">특기</a></li>
           <li><a href="#hobby">취미</a></li>
           <li><a href="#vibe">도전</a></li>
+          <li><a href="#board">게시판</a></li>
         </ul>
       </nav>
       <div class="auth-area">
@@ -392,6 +451,38 @@
       </div>
     </section>
 
+    <!-- 05 Board -->
+    <section class="block" id="board">
+      <div class="wrap">
+        <div class="sec-head reveal"><span class="sec-num">05</span><h2>게시판</h2></div>
+
+        <form id="postForm" class="board-form hidden" novalidate>
+          <div class="field">
+            <label for="postTitle">제목</label>
+            <input id="postTitle" type="text" maxlength="100" placeholder="제목을 입력하세요" required>
+          </div>
+          <div class="field">
+            <label for="postContent">내용</label>
+            <textarea id="postContent" maxlength="2000" placeholder="내용을 입력하세요 (최대 2000자)" required></textarea>
+          </div>
+          <div class="row">
+            <p id="postMsg" class="msg" role="status"></p>
+            <button id="postSubmit" class="btn btn-primary" type="submit" style="border:0;cursor:pointer;font-family:inherit">글쓰기</button>
+          </div>
+        </form>
+
+        <div id="postLogin" class="board-login hidden">
+          <span>글을 쓰려면 로그인이 필요합니다.</span>
+          <button id="postLoginBtn" class="btn-sm solid" type="button">로그인</button>
+        </div>
+
+        <div id="postList" class="posts" aria-live="polite"></div>
+        <div id="postMore" class="board-more hidden">
+          <button id="postMoreBtn" class="btn-sm line" type="button">더 보기</button>
+        </div>
+      </div>
+    </section>
+
     <!-- Contact -->
     <section class="block contact" id="contact">
       <div class="wrap reveal">
@@ -451,7 +542,243 @@
       $('logoutBtn').classList.toggle('hidden', !user);
       $('authUser').classList.toggle('hidden', !user);
       $('authUser').textContent = user ? user.email : '';
+      // 토큰 갱신 등으로 같은 사용자가 다시 알려질 땐 다시 그리지 않아 입력 중인 내용이 지워지지 않게 합니다.
+      const prevId = boardUser ? boardUser.id : null;
+      boardUser = user || null;
+      $('postForm').classList.toggle('hidden', !user);
+      $('postLogin').classList.toggle('hidden', !!user || !sb);
+      if ((boardUser ? boardUser.id : null) !== prevId) { editingId = null; renderPosts(boardErr); }
     }
+
+    // ---- 게시판 ----
+    const PAGE_SIZE = 10;
+    let boardUser = null, posts = [], hasMore = false, editingId = null, boardErr = '';
+    const openPosts = new Set();        // 댓글 창이 열린 글 id
+    const commentsByPost = new Map();   // 글 id -> { items } | { error }
+
+    // 공개 게시판이므로 이메일 전체 대신 앞 3글자만 노출합니다.
+    function maskName(email) { return (email || '').split('@')[0].slice(0, 3) + '***'; }
+    function fmtDate(iso) {
+      const d = new Date(iso), p = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+    function boardError(e) {
+      const m = ((e && e.message) || '').toLowerCase();
+      if (m.includes('could not find') || m.includes('does not exist')) return '게시판 테이블이 아직 없습니다. supabase/board.sql 을 실행해 주세요.';
+      if (m.includes('row-level security') || m.includes('no rows') || m.includes('multiple (or no) rows')) return '권한이 없거나 이미 삭제된 항목입니다. 다시 로그인하거나 새로고침해 주세요.';
+      return '오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+    }
+
+    function el(tag, cls, text) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text != null) n.textContent = text;
+      return n;
+    }
+    function btn(label, cls, onClick) {
+      const b = el('button', 'btn-sm ' + cls, label);
+      b.type = 'button';
+      b.addEventListener('click', onClick);
+      return b;
+    }
+    function setMsg(node, text, type) { node.textContent = text; node.className = 'msg' + (type ? ' ' + type : ''); }
+
+    // 글 카드 하나만 다시 그려서 다른 글에 입력 중인 내용이 지워지지 않게 합니다.
+    function refreshPost(id, focusSel) {
+      const post = posts.find((p) => p.id === id);
+      const old = $('postList').querySelector(`[data-id="${id}"]`);
+      if (!post || !old) return;
+      const fresh = buildPost(post);
+      old.replaceWith(fresh);
+      const sel = focusSel || (editingId === id ? '.post-edit input' : null);
+      const target = sel && fresh.querySelector(sel);
+      if (target) target.focus();
+    }
+
+    function buildPost(post) {
+      const item = el('article', 'post');
+      item.dataset.id = post.id;
+      const mine = boardUser && boardUser.id === post.user_id;
+      if (editingId === post.id) {
+        item.appendChild(buildEditForm(post));
+      } else {
+        const head = el('div', 'post-head');
+        head.appendChild(el('h3', '', post.title));
+        if (mine) {
+          const acts = el('div', 'post-actions');
+          acts.append(
+            btn('수정', 'line', () => { const prev = editingId; editingId = post.id; if (prev) refreshPost(prev); refreshPost(post.id); }),
+            btn('삭제', 'line', (e) => deletePost(post, e.currentTarget))
+          );
+          head.appendChild(acts);
+        }
+        item.append(
+          head,
+          el('div', 'meta', `${post.author} · ${fmtDate(post.created_at)}${post.updated_at ? ' · 수정됨' : ''}`),
+          el('div', 'body', post.content)
+        );
+      }
+      item.appendChild(buildComments(post));
+      return item;
+    }
+
+    function buildEditForm(post) {
+      const form = el('form', 'post-edit');
+      form.noValidate = true;
+      const title = el('input', 'inp'); title.type = 'text'; title.maxLength = 100; title.value = post.title; title.setAttribute('aria-label', '제목');
+      const content = el('textarea', 'inp'); content.maxLength = 2000; content.value = post.content; content.setAttribute('aria-label', '내용');
+      const msg = el('p', 'msg'); msg.setAttribute('role', 'status');
+      const save = el('button', 'btn-sm solid', '저장'); save.type = 'submit';
+      const cancel = btn('취소', 'line', () => { editingId = null; refreshPost(post.id); });
+      const row = el('div', 'row');
+      row.append(msg, cancel, save);
+      form.append(title, content, row);
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const t = title.value.trim(), c = content.value.trim();
+        if (!t || !c) return setMsg(msg, '제목과 내용을 모두 입력해 주세요.', 'err');
+        save.disabled = true; setMsg(msg, '');
+        const { data, error } = await sb.from('posts').update({ title: t, content: c }).eq('id', post.id).select('updated_at').single();
+        if (error) { save.disabled = false; return setMsg(msg, boardError(error), 'err'); }
+        Object.assign(post, { title: t, content: c, updated_at: data.updated_at });
+        editingId = null;
+        refreshPost(post.id);
+      });
+      return form;
+    }
+
+    function buildComments(post) {
+      const wrap = el('div', 'comments-wrap');
+      const open = openPosts.has(post.id);
+      const toggle = btn(`💬 댓글 ${post.commentCount}`, 'line cmt-toggle', () => toggleComments(post));
+      toggle.setAttribute('aria-expanded', String(open));
+      wrap.appendChild(toggle);
+      if (!open) return wrap;
+
+      const box = el('div', 'comments');
+      const state = commentsByPost.get(post.id);
+      if (!state) {
+        box.appendChild(el('p', 'cmt-empty', '불러오는 중…'));
+      } else if (state.error) {
+        box.appendChild(el('p', 'cmt-empty', state.error));
+      } else {
+        if (!state.items.length) box.appendChild(el('p', 'cmt-empty', '첫 댓글을 남겨보세요.'));
+        for (const c of state.items) {
+          const row = el('div', 'comment');
+          const head = el('div', 'cmt-head');
+          head.append(el('strong', '', c.author), el('span', '', fmtDate(c.created_at)));
+          if (boardUser && boardUser.id === c.user_id) {
+            const del = el('button', 'del-cmt', '삭제'); del.type = 'button';
+            del.addEventListener('click', () => deleteComment(post, c, del));
+            head.appendChild(del);
+          }
+          row.append(head, el('div', 'cmt-body', c.content));
+          box.appendChild(row);
+        }
+      }
+
+      if (boardUser) {
+        const form = el('form', 'comment-form');
+        form.noValidate = true;
+        const input = el('input', 'inp'); input.type = 'text'; input.maxLength = 500; input.placeholder = '댓글을 입력하세요'; input.setAttribute('aria-label', '댓글');
+        const submit = el('button', 'btn-sm solid', '등록'); submit.type = 'submit';
+        form.append(input, submit);
+        form.addEventListener('submit', (e) => { e.preventDefault(); addComment(post, input, submit); });
+        box.appendChild(form);
+      } else {
+        box.appendChild(el('p', 'cmt-hint', '댓글을 쓰려면 로그인이 필요합니다.'));
+      }
+      wrap.appendChild(box);
+      return wrap;
+    }
+
+    function renderPosts(errorText) {
+      const list = $('postList');
+      list.replaceChildren();
+      if (errorText || !posts.length) {
+        list.appendChild(el('p', 'board-empty', errorText || '아직 게시글이 없습니다. 첫 글을 남겨보세요!'));
+      }
+      for (const post of posts) list.appendChild(buildPost(post));
+      $('postMore').classList.toggle('hidden', !hasMore);
+    }
+
+    async function loadPosts(reset) {
+      if (!sb) return renderPosts('게시판을 불러오지 못했습니다. 새로고침해 주세요.');
+      const from = reset ? 0 : posts.length;
+      const { data, error } = await sb.from('posts')
+        .select('id,user_id,author,title,content,created_at,updated_at,comments(count)')
+        .order('created_at', { ascending: false }).order('id', { ascending: false })
+        .range(from, from + PAGE_SIZE - 1);
+      if (error) { hasMore = false; posts = []; boardErr = boardError(error); return renderPosts(boardErr); }
+      boardErr = '';
+      const rows = data.map((p) => ({ ...p, commentCount: (p.comments && p.comments[0] && p.comments[0].count) || 0 }));
+      posts = reset ? rows : posts.concat(rows);
+      hasMore = rows.length === PAGE_SIZE;
+      renderPosts();
+    }
+
+    async function deletePost(post, button) {
+      if (!confirm('이 글을 삭제할까요? 달린 댓글도 함께 삭제됩니다.')) return;
+      button.disabled = true;
+      const { error } = await sb.from('posts').delete().eq('id', post.id);
+      if (error) { button.disabled = false; return alert(boardError(error)); }
+      openPosts.delete(post.id); commentsByPost.delete(post.id);
+      loadPosts(true);
+    }
+
+    async function toggleComments(post) {
+      if (openPosts.has(post.id)) { openPosts.delete(post.id); return refreshPost(post.id); }
+      openPosts.add(post.id);
+      refreshPost(post.id);
+      const { data, error } = await sb.from('comments')
+        .select('id,user_id,author,content,created_at')
+        .eq('post_id', post.id)
+        .order('created_at', { ascending: true }).order('id', { ascending: true });
+      commentsByPost.set(post.id, error ? { error: boardError(error) } : { items: data });
+      if (!error) post.commentCount = data.length;
+      refreshPost(post.id);
+    }
+
+    async function addComment(post, input, submit) {
+      const content = input.value.trim();
+      if (!content) return;
+      submit.disabled = true;
+      const { data, error } = await sb.from('comments')
+        .insert({ post_id: post.id, content, author: maskName(boardUser.email) })
+        .select('id,user_id,author,content,created_at').single();
+      if (error) { submit.disabled = false; return alert(boardError(error)); }
+      const state = commentsByPost.get(post.id);
+      if (state && state.items) state.items.push(data); else commentsByPost.set(post.id, { items: [data] });
+      post.commentCount += 1;
+      refreshPost(post.id, '.comment-form input');
+    }
+
+    async function deleteComment(post, comment, button) {
+      if (!confirm('이 댓글을 삭제할까요?')) return;
+      button.disabled = true;
+      const { error } = await sb.from('comments').delete().eq('id', comment.id);
+      if (error) { button.disabled = false; return alert(boardError(error)); }
+      const state = commentsByPost.get(post.id);
+      if (state && state.items) state.items = state.items.filter((c) => c.id !== comment.id);
+      post.commentCount = Math.max(0, post.commentCount - 1);
+      refreshPost(post.id);
+    }
+
+    $('postForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pm = $('postMsg'), submitBtn = $('postSubmit');
+      const title = $('postTitle').value.trim(), content = $('postContent').value.trim();
+      if (!boardUser) return setMsg(pm, '로그인이 필요합니다.', 'err');
+      if (!title || !content) return setMsg(pm, '제목과 내용을 모두 입력해 주세요.', 'err');
+      submitBtn.disabled = true; setMsg(pm, '');
+      const { error } = await sb.from('posts').insert({ title, content, author: maskName(boardUser.email) });
+      submitBtn.disabled = false;
+      if (error) return setMsg(pm, boardError(error), 'err');
+      $('postForm').reset();
+      loadPosts(true);
+    });
+    $('postMoreBtn').addEventListener('click', () => loadPosts(false));
+    $('postLoginBtn').addEventListener('click', () => openModal('login'));
 
     $('loginBtn').addEventListener('click', () => openModal('login'));
     $('authClose').addEventListener('click', closeModal);
@@ -494,6 +821,7 @@
     } else {
       $('loginBtn').classList.add('hidden');
     }
+    loadPosts(true);
 
     const io =new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
